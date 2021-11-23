@@ -7,28 +7,13 @@
 let http = require('http');
 let path = require('path');
 let absolutePath = __dirname;
-let server = http.createServer(handleRequest);
 
-function handleRequest(req, res) {
-  console.log(__filename);
-  console.log(req.url);
-  if (req.url === '/index.html') {
-    res.setHeader('Content-Type', 'text/plain');
-    let pathLink = path.join(absolutePath, '/index.html');
-    res.write(pathLink);
-   // res.write(req.url);
-    res.end();
-  }
-  if (req.url === '/app.js') {
-    res.setHeader('Content-Type', 'text/plain');
-    res.end(absolutePath + req.url);
-  }
-}
+console.log(__filename);
+console.log(__dirname + '/app.js');
+console.log('./index.html');
 
-server.listen(3000, () => {
-  console.log('server is listening to the port 3k');
-});
-
+var indexPath = path.join(__dirname,'index.html');
+console.log(indexPath);
 
 // Q. Create a server using http
 // - handle post method on '/' route
@@ -47,24 +32,19 @@ let http = require('http');
 let server = http.createServer(handleRequest);
 
 function handleRequest(req, res) {
-  let formatData = req.headers['content-type'];
-  let store = '';
-  req.on('data', (chunk) => {
-    store += chunk;
-  });
-  req.on('end', () => {
-    if (
-      req.method === 'POST' &&
-      req.url === '/' &&
-      formatData === 'application/json'
-    ) {
-      res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(store);
-    }
-  });
+  if(req.method==='POST' && req.url ==='/'){
+      var store = '';
+      req.on('data',(chunk)=>{
+          store +=chunk;
+      });
+      req.on('end',()=>{
+         res.statusCode=201;
+         res.end(store);
+      });
+  }
 }
 
-server.listen(3000, 'localhost', () => {
+server.listen(3000, () => {
   console.log('server is listening to the port 3k');
 });
 
@@ -78,15 +58,16 @@ let qs = require('querystring');
 let server = http.createServer(handleRequest);
 
 function handleRequest(req, res) {
-  let formatData = req.headers['content-type'];
-  let store = '';
-  req.on('data', (chunk) => {
-    store += chunk;
-  });
-  req.on('end', () => {
-    res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(store);
-  });
+  if(req.method ==='POST' && req.url==='/'){
+      var store = '';
+      req.on('data',(chunk)=>{
+          store +=chunk;
+      }).on('end',()=>{
+          res.statusCode =201;
+          var parsedData = qs.parse(store);
+          res.end(JSON.stringify(parsedData));
+      });
+  }
 }
 
 server.listen(3000, 'localhost', () => {
